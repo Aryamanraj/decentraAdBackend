@@ -1,0 +1,219 @@
+openapi: 3.0.0
+info:
+  title: My API Documentation
+  version: 1.0.0
+  description: This is the API documentation for my app.
+servers:
+  - url: http://localhost:3025
+    description: Local server
+
+paths:
+  /fetch-api-key:
+    get:
+      summary: Retrieve an API key
+      description: Fetch the API key for a given wallet address.
+      parameters:
+        - in: query
+          name: walletAddr
+          schema:
+            type: string
+          required: true
+          description: Wallet address to fetch the API key for
+      responses:
+        200:
+          description: Successfully fetched the API key.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  apiKey:
+                    type: string
+                  message:
+                    type: string
+        400:
+          description: Bad request.
+
+  /store-api-key:
+    post:
+      summary: Store an API key
+      description: Store an API key for a wallet address.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                walletAddr:
+                  type: string
+                apiKey:
+                  type: string
+      responses:
+        200:
+          description: API key stored successfully.
+
+  /upload-content:
+    post:
+      summary: Upload content
+      description: Uploads content and stores final CID.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                contentx:
+                  type: string
+                apiKey:
+                  type: string
+                cidMedia:
+                  type: string
+                walletAddr:
+                  type: string
+      responses:
+        200:
+          description: Final content uploaded successfully.
+
+  /updateAnalytics:
+    post:
+      summary: Update content analytics
+      description: Updates analytics for a specific piece of content.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                walletAddr:
+                  type: string
+                cid:
+                  type: string
+                viewerAddr:
+                  type: string
+                updateType:
+                  type: string
+      responses:
+        200:
+          description: Analytics updated successfully.
+
+  /getArticles:
+    get:
+      summary: Get paginated articles
+      description: Retrieves a paginated list of articles.
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Page number
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+          description: Number of articles per page
+      responses:
+        200:
+          description: A paginated list of articles.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Article'
+
+  /getUserAnalytics:
+    get:
+      summary: Get user analytics
+      description: Retrieves analytics for a specific user.
+      parameters:
+        - in: query
+          name: walletAddr
+          schema:
+            type: string
+          required: true
+          description: Wallet address to get analytics for
+      responses:
+        200:
+          description: Analytics data for the user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAnalytics'
+
+  /getUserPosts:
+    get:
+      summary: Get user posts
+      description: Retrieves all posts made by a specific user.
+      parameters:
+        - in: query
+          name: walletAddr
+          schema:
+            type: string
+          required: true
+          description: Wallet address to get posts for
+      responses:
+        200:
+          description: A list of posts made by the user.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+
+components:
+  schemas:
+    Article:
+      type: object
+      properties:
+        publicKey:
+          type: string
+        cid:
+          type: string
+        Views:
+          type: integer
+        Likes:
+          type: integer
+        Dislikes:
+          type: integer
+        totalTime:
+          type: integer
+        timestamp:
+          type: string
+          format: date-time
+
+    UserAnalytics:
+      type: object
+      properties:
+        totalViews:
+          type: integer
+        totalTimeSpent:
+          type: integer
+        totalLikes:
+          type: integer
+        totalDislikes:
+          type: integer
+
+    Post:
+      type: object
+      properties:
+        cid:
+          type: string
+        Views:
+          type: integer
+        Likes:
+          type: array
+          items:
+            type: string
+        Dislikes:
+          type: array
+          items:
+            type: string
+        totalTime:
+          type: integer
+        timestamp:
+          type: string
+          format: date-time
