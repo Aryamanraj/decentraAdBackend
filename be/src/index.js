@@ -18,6 +18,7 @@ import cors from "cors";
 
 const app = express();
 const PORT = 3025;
+const HOSTNAME = '127.0.0.1';
 
 app.use(cors()); // Enable CORS for all routes
 app.use(express.json());
@@ -123,6 +124,6 @@ app.get("/getUserPosts", (req, res) => {
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+app.listen(PORT, HOSTNAME, () => {
+    console.log(`Server running at http://${HOSTNAME}:${PORT}/`);
 });
