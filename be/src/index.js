@@ -17,7 +17,14 @@ import { createUser } from "./actions.js";
 import cors from "cors";
 const app = express();
 const PORT = 3025;
-const HOSTNAME = '127.0.0.1';
+const HOSTNAME = "127.0.0.1";
+
+import { walletAddress } from "./config/index.js";
+
+import { mintAndTransferNFT, getTokenURI } from "./nft/index.js";
+
+import dotenv from "dotenv";
+dotenv.config();
 
 app.use(cors()); // Enable CORS for all routes
 app.use(express.json());
@@ -42,18 +49,18 @@ app.get("/fetch-api-key", (req, res) => {
         res.status(200).json({ message: "Not created" });
     }
 });
-app.post("/createPost",(req,res)=>{
-console.log("Creating a post");
-const {creator,content}=req.body;
-res.status(200).json({message:"added post"});
-})
+app.post("/createPost", (req, res) => {
+    console.log("Creating a post");
+    const { creator, content } = req.body;
+    res.status(200).json({ message: "added post" });
+});
 
-app.post("/createUser",(req,res)=>{
+app.post("/createUser", (req, res) => {
     console.log("creating a user");
-    const {useradd}=req.body;
-    let newuser=createUser(useradd);
-    res.status(200).json({user:newuser})
-})
+    const { useradd } = req.body;
+    let newuser = createUser(useradd);
+    res.status(200).json({ user: newuser });
+});
 app.post("/store-api-key", (req, res) => {
     console.log("called store api key"); // Log the request body
     const { walletAddr, apiKey } = req.body;
@@ -77,10 +84,10 @@ app.post("/upload-content", (req, res) => {
 });
 
 app.post("/updateAnalytics", (req, res) => {
-    const { walletAddr, cid, viewerAddr, updateType } = req.body;
+    const { walletAddr, cid, viewerAddr, update } = req.body;
 
     try {
-        updateAnalytics(walletAddr, cid, viewerAddr, updateType);
+        updateAnalytics(walletAddr, cid, viewerAddr, update);
         res.send("Analytics updated successfully.");
     } catch (error) {
         console.error(error);
@@ -132,6 +139,43 @@ app.get("/getUserPosts", (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 });
+
+app.post("/mintAndTransfer", async (req, res) => {
+    try {
+        const { transferToAddress, tokenURI } = req.body;
+        if (!transferToAddress || !tokenURI) {
+            return res
+                .status(400)
+                .send("Missing transferToAddress or tokenURI");
+        }
+
+        const result = await mintAndTransferNFT(
+            walletAddress,
+            transferToAddress,
+            tokenURI
+        );
+        res.send(result);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("An error occurred while processing your request");
+    }
+});
+
+app.get("/getTokenURI", async (req, res) => {
+    try {
+        const { tokenId } = req.body;
+        if (!tokenId) {
+            return res.status(400).send("Missing tokenId");
+        }
+
+        const result = await getTokenURI(tokenId);
+        res.send(result);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("An error occurred while processing your request");
+    }
+});
+
 
 app.listen(PORT, HOSTNAME, () => {
     console.log(`Server running at http://${HOSTNAME}:${PORT}/`);
