@@ -34,26 +34,26 @@ async function uploadToIPFS(apiKey, text) {
     }
 }
 
-function storeCid(cid, publicKey) {
-    const db = readCidDatabase();
-    const timestamp = new Date().toISOString(); // ISO format timestamp
+// function storeCid(cid, walletAddr) {
+//     const db = readCidDatabase();
+//     const timestamp = new Date().toISOString(); // ISO format timestamp
 
-    if (!db[publicKey]) {
-        db[publicKey] = {};
-    }
+//     if (!db[walletAddr]) {
+//         db[walletAddr] = {};
+//     }
 
-    db[publicKey][cid] = {
-        Views: "",
-        Likes: [],
-        Dislikes: [],
-        totalTime: "",
-        timestamp: timestamp,
-    };
+//     db[walletAddr][cid] = {
+//         Views: "",
+//         Likes: [],
+//         Dislikes: [],
+//         Reviews: [],
+//         timestamp: timestamp,
+//     };
 
-    writeCidDatabase(db);
-}
+//     writeCidDatabase(db);
+// }
 
-async function uploadFinal(contentx, apikey, cidMedia, publicKey) {
+async function uploadFinal(contentx, apikey, cidMedia, walletAddr) {
     const db = readCidDatabase();
     const finall = {
         cidMedia: cidMedia,
@@ -61,14 +61,14 @@ async function uploadFinal(contentx, apikey, cidMedia, publicKey) {
     };
     const cidFinal = await uploadToIPFS(apikey, JSON.stringify(finall));
 
-    if (!db[publicKey]) {
-        db[publicKey] = {};
+    if (!db[walletAddr]) {
+        db[walletAddr] = {};
     }
-    db[publicKey][cidFinal.data.Hash] = {
+    db[walletAddr][cidFinal.data.Hash] = {
         Views: "",
         Likes: [],
         Dislikes: [],
-        totalTime: "",
+        Reviews: [],
     };
     writeCidDatabase(db);
 }
@@ -78,7 +78,7 @@ function fetchCidInfo(walletAddr, cid) {
     return (db[walletAddr] && db[walletAddr][cid]) || null;
 }
 
-function updateAnalytics(walletAddr, cid, viewerAddr, updateType) {
+function updateAnalytics(walletAddr, cid, viewerAddr, update) {
     const db = readCidDatabase();
 
     if (!db[walletAddr] || !db[walletAddr][cid]) {
@@ -87,7 +87,7 @@ function updateAnalytics(walletAddr, cid, viewerAddr, updateType) {
 
     let content = db[walletAddr][cid];
 
-    switch (updateType) {
+    switch (update.Type) {
         case "view":
             content.Views = (content.Views || 0) + 1;
             break;
@@ -107,8 +107,8 @@ function updateAnalytics(walletAddr, cid, viewerAddr, updateType) {
                 ); // Remove from likes if present
             }
             break;
-        case "totalTime":
-            content.totalTime = (content.totalTime || 0) + 1; // Assuming totalTime is an increment for each view
+        case "review":
+            content.Reviews = content.Reviews.push(update.Message) // Assuming totalTime is an increment for each view
             break;
         default:
             throw new Error("Invalid update type");
@@ -120,14 +120,12 @@ function updateAnalytics(walletAddr, cid, viewerAddr, updateType) {
 function getUserAnalytics(walletAddr) {
     const db = readCidDatabase();
     let totalViews = 0;
-    let totalTimeSpent = 0;
     let totalLikes = 0;
     let totalDislikes = 0;
 
     if (db[walletAddr]) {
         Object.values(db[walletAddr]).forEach((content) => {
             totalViews += parseInt(content.Views || 0);
-            totalTimeSpent += parseInt(content.totalTime || 0);
             totalLikes += content.Likes ? content.Likes.length : 0;
             totalDislikes += content.Dislikes ? content.Dislikes.length : 0;
         });
@@ -136,7 +134,6 @@ function getUserAnalytics(walletAddr) {
     return {
         walletAddr,
         totalViews,
-        totalTimeSpent,
         totalLikes,
         totalDislikes,
     };
@@ -177,7 +174,6 @@ function getPaginatedArticles(page, pageSize) {
 
 
 export {
-    storeCid,
     fetchCidInfo,
     uploadFinal,
     updateAnalytics,
