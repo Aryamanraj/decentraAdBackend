@@ -13,16 +13,14 @@ import {
 
 import swaggerUi from "swagger-ui-express";
 import yaml from "yamljs";
-
+import { createUser } from "./actions.js";
 import cors from "cors";
-
 const app = express();
 const PORT = 3025;
 const HOSTNAME = '127.0.0.1';
 
 app.use(cors()); // Enable CORS for all routes
 app.use(express.json());
-
 // Load Swagger document
 const swaggerDocument = yaml.load("src/swagger.yaml");
 
@@ -44,7 +42,18 @@ app.get("/fetch-api-key", (req, res) => {
         res.status(200).json({ message: "Not created" });
     }
 });
+app.post("/createPost",(req,res)=>{
+console.log("Creating a post");
+const {creator,content}=req.body;
+res.status(200).json({message:"added post"});
+})
 
+app.post("/createUser",(req,res)=>{
+    console.log("creating a user");
+    const {useradd}=req.body;
+    let newuser=createUser(useradd);
+    res.status(200).json({user:newuser})
+})
 app.post("/store-api-key", (req, res) => {
     console.log("called store api key"); // Log the request body
     const { walletAddr, apiKey } = req.body;
