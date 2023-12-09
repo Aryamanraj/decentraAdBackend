@@ -66,6 +66,7 @@ async function uploadFinal(contentx, apikey, cidMedia, walletAddr) {
     }
     db[walletAddr][cidFinal.data.Hash] = {
         Views: "",
+        Hover: "",
         Likes: [],
         Dislikes: [],
         Reviews: [],
@@ -91,6 +92,9 @@ function updateAnalytics(walletAddr, cid, viewerAddr, update) {
         case "view":
             content.Views = (content.Views || 0) + 1;
             break;
+        case "hover":
+            content.Hover = (content.Hover || 0) + 1;
+            break
         case "like":
             if (!content.Likes.includes(viewerAddr)) {
                 content.Likes.push(viewerAddr);
@@ -121,6 +125,7 @@ function getUserAnalytics(walletAddr) {
     const db = readCidDatabase();
     let totalViews = 0;
     let totalLikes = 0;
+    let totalHover = 0;
     let totalDislikes = 0;
 
     if (db[walletAddr]) {
@@ -128,12 +133,14 @@ function getUserAnalytics(walletAddr) {
             totalViews += parseInt(content.Views || 0);
             totalLikes += content.Likes ? content.Likes.length : 0;
             totalDislikes += content.Dislikes ? content.Dislikes.length : 0;
+            totalHover += parseInt(content.Hover || 0);
         });
     }
 
     return {
         walletAddr,
         totalViews,
+        totalHover,
         totalLikes,
         totalDislikes,
     };
