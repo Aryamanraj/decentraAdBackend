@@ -10,10 +10,11 @@ import {
     getUserAnalytics,
     getPaginatedArticles,
 } from "./uploads/cidDatabase.js";
+import { uploadAd } from "./advert/index.js";
 
 import swaggerUi from "swagger-ui-express";
 import yaml from "yamljs";
-import { createUser } from "./actions.js";
+// import { createUser } from "./actions.js";
 import cors from "cors";
 const app = express();
 const PORT = 3025;
@@ -49,18 +50,19 @@ app.get("/fetch-api-key", (req, res) => {
         res.status(200).json({ message: "Not created" });
     }
 });
-app.post("/createPost", (req, res) => {
-    console.log("Creating a post");
-    const { creator, content } = req.body;
-    res.status(200).json({ message: "added post" });
-});
+// app.post("/createPost", (req, res) => {
+//     console.log("Creating a post");
+//     const { creator, content } = req.body;
+//     res.status(200).json({ message: "added post" });
+// });
 
-app.post("/createUser", (req, res) => {
-    console.log("creating a user");
-    const { useradd } = req.body;
-    let newuser = createUser(useradd);
-    res.status(200).json({ user: newuser });
-});
+// app.post("/createUser", (req, res) => {
+//     console.log("creating a user");
+//     const { useradd } = req.body;
+//     let newuser = createUser(useradd);
+//     res.status(200).json({ user: newuser });
+// });
+
 app.post("/store-api-key", (req, res) => {
     console.log("called store api key"); // Log the request body
     const { walletAddr, apiKey } = req.body;
@@ -78,11 +80,16 @@ app.post("/store-api-key", (req, res) => {
 // });
 
 app.post("/upload-content", async (req, res) => {
-    try{
+    try {
         const { contentx, apiKey, cidMedia, walletAddr } = req.body;
-        const cidFinal = await uploadFinal(contentx, apiKey, cidMedia, walletAddr);
+        const cidFinal = await uploadFinal(
+            contentx,
+            apiKey,
+            cidMedia,
+            walletAddr
+        );
         // console.log(cidFinal);
-        res.status(200).json({ message: "Final uploaded", tokenURI:  cidFinal});
+        res.status(200).json({ message: "Final uploaded", tokenURI: cidFinal });
     } catch (error) {
         console.error(error);
         res.status(400).send(error.message);
@@ -182,6 +189,25 @@ app.get("/getTokenURI", async (req, res) => {
     }
 });
 
+app.post("/upload-ad", async (req, res) => {
+    try {
+        const { link, apiKey, cidMedia, walletAddr, time, cidOfPost, bid } = req.body;
+        const cidFinal = await uploadAd(
+            link,
+            apiKey,
+            cidMedia,
+            walletAddr, 
+            time,
+            cidOfPost,
+            bid
+        );
+        // console.log(cidFinal);
+        res.status(200).json({ message: "Final uploaded", tokenURI: cidFinal });
+    } catch (error) {
+        console.error(error);
+        res.status(400).send(error.message);
+    }
+});
 
 app.listen(PORT, HOSTNAME, () => {
     console.log(`Server running at http://${HOSTNAME}:${PORT}/`);
