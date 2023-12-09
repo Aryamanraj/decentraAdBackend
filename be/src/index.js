@@ -77,11 +77,11 @@ app.post("/store-api-key", (req, res) => {
 //     res.status(200).json({ message: 'CID stored successfully' });
 // });
 
-app.post("/upload-content", (req, res) => {
+app.post("/upload-content", async (req, res) => {
     try{
         const { contentx, apiKey, cidMedia, walletAddr } = req.body;
-        const cidFinal = uploadFinal(contentx, apiKey, cidMedia, walletAddr);
-        console.log(cidFinal);
+        const cidFinal = await uploadFinal(contentx, apiKey, cidMedia, walletAddr);
+        // console.log(cidFinal);
         res.status(200).json({ message: "Final uploaded", tokenURI:  cidFinal});
     } catch (error) {
         console.error(error);
