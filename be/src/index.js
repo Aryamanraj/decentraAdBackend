@@ -191,7 +191,7 @@ app.get("/getTokenURI", async (req, res) => {
 
 app.post("/upload-ad", async (req, res) => {
     try {
-        const { link, apiKey, cidMedia, walletAddr, time, cidOfPost, bid } = req.body;
+        const { link, apiKey, cidMedia, walletAddr, cidOfPost, bid } = req.body;
         const cidFinal = await uploadAd(
             link,
             apiKey,
