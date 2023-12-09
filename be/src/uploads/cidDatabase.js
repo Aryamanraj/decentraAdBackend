@@ -72,6 +72,7 @@ async function uploadFinal(contentx, apikey, cidMedia, walletAddr) {
         Reviews: [],
     };
     writeCidDatabase(db);
+    return cidFinal;
 }
 
 function fetchCidInfo(walletAddr, cid) {

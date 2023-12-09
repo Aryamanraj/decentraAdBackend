@@ -78,9 +78,15 @@ app.post("/store-api-key", (req, res) => {
 // });
 
 app.post("/upload-content", (req, res) => {
-    const { contentx, apiKey, cidMedia, walletAddr } = req.body;
-    uploadFinal(contentx, apiKey, cidMedia, walletAddr);
-    res.status(200).json({ message: "Final uploaded" });
+    try{
+        const { contentx, apiKey, cidMedia, walletAddr } = req.body;
+        const cidFinal = uploadFinal(contentx, apiKey, cidMedia, walletAddr);
+        console.log(cidFinal);
+        res.status(200).json({ message: "Final uploaded", tokenURI:  cidFinal});
+    } catch (error) {
+        console.error(error);
+        res.status(400).send(error.message);
+    }
 });
 
 app.post("/updateAnalytics", (req, res) => {
