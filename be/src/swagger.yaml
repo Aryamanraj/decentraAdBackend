@@ -4,7 +4,7 @@ info:
     version: 1.0.0
     description: This is the API documentation for my app.
 servers:
-    - url: http://localhost:3025
+    - url: http://16.170.221.43:80/
       description: Local server
 
 paths:
