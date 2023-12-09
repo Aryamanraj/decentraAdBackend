@@ -197,7 +197,6 @@ app.post("/upload-ad", async (req, res) => {
             apiKey,
             cidMedia,
             walletAddr, 
-            time,
             cidOfPost,
             bid
         );

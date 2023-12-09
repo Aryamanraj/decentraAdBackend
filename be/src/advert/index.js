@@ -34,12 +34,11 @@ function isAdvertPresent(walletAddrAdvert) {
     return db.hasOwnProperty(walletAddrAdvert);
 }
 
-async function uploadAd(link, apikey, cidMedia, walletAddr, time, cidOfPost, bid) {
+async function uploadAd(link, apikey, cidMedia, walletAddr, cidOfPost, bid) {
     const db = readDatabase();
     const finall = {
         cidMedia: cidMedia,
         link: link,
-        time: time,
         bid: bid
     };
     const cidFinal = await uploadToIPFS(apikey, JSON.stringify(finall));
@@ -50,7 +49,6 @@ async function uploadAd(link, apikey, cidMedia, walletAddr, time, cidOfPost, bid
     db[walletAddr][cidFinal.data.Hash] = {
         cidMedia: cidMedia,
         link: link,
-        time: time,
         bid: bid,
         cidOfPost: cidOfPost,
     };
