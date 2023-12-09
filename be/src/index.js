@@ -87,7 +87,7 @@ app.post("/updateAnalytics", (req, res) => {
     const { walletAddr, cid, viewerAddr, update } = req.body;
 
     try {
-        updateAnalytics(walletAddr, cid, viewerAddr, update);
+        updateAnalytics(walletAddr, cid, viewerAddr, JSON.parse(update));
         res.send("Analytics updated successfully.");
     } catch (error) {
         console.error(error);
