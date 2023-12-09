@@ -1,6 +1,7 @@
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import path from 'path';
+import lighthouse from "@lighthouse-web3/sdk";
 
 // Setup for directory and file paths
 const __filename = fileURLToPath(import.meta.url);
