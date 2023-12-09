@@ -28,6 +28,20 @@ function writeDatabase(data) {
     }
 }
 
+async function uploadToIPFS(apiKey, text) {
+    try {
+        console.log("1: ", text, apiKey);
+        const uploadResponse = await lighthouse.uploadText(
+            JSON.stringify(text),
+            apiKey
+        );
+        return uploadResponse;
+    } catch (error) {
+        console.error("Error uploading to IPFS:", error);
+        throw error;
+    }
+}
+
 // Function to check if an advertisement entry exists
 function isAdvertPresent(walletAddrAdvert) {
     const db = readDatabase();
